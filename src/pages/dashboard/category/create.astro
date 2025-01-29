@@ -1,0 +1,39 @@
+---
+import Label from "@/components/Label.astro";
+import Layout from "@/layouts/Layout.astro";
+import TextInput from "@/components/TextInput";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import PrimaryButton from "@/components/PrimaryButton";
+---
+
+<Layout title="Create Category">
+  <Breadcrumb />
+  <h1 class="text-xl font-medium">Create Category</h1>
+
+  <form class="space-y-2 max-w-md mt-4">
+    <div class="space-y-1">
+      <Label for="name" value="Name" />
+      <TextInput placeholder="Name" name="name" className="w-full" />
+      <div id="error-name" class="text-sm text-red-400 pt-1"></div>
+    </div>
+
+    <div class="pt-2">
+      <PrimaryButton>Save</PrimaryButton>
+    </div>
+  </form>
+</Layout>
+
+<script>
+  import { actions } from "astro:actions";
+  import { navigate } from "astro:transitions/client";
+
+  const nameError = document.getElementById("error-name");
+  const form = document.querySelector("form");
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const { error } = await actions.category.create(formData);
+    if (error) nameError!.textContent = error.fields?.name?.join(",");
+    if (!error) navigate("/dashboard/categories");
+  });
+</script>

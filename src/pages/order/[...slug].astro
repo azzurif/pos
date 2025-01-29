@@ -1,0 +1,30 @@
+---
+import { Prisma } from "@/database";
+import Layout from "@/layouts/Layout.astro";
+import CategoryList from "@/components/CategoryList.astro";
+import ProductsWrapper from "@/components/wrapper/ProductsWrapper";
+import Sidebar from "@/components/Sidebar.astro";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async () => {
+  const categories = await Prisma.category.findMany({});
+
+  const paths = categories.map((category) => ({
+    params: { slug: category.slug as string },
+  }));
+
+  return [...paths, { params: { slug: undefined } }];
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const { pathname } = Astro.url;
+---
+
+<Layout title="Order">
+  <div class:list={[pathname.startsWith("/order") && "w-full md:w-3/4"]}>
+    <CategoryList />
+
+    <ProductsWrapper slug={slug} client:load />
+    <Sidebar />
+  </div>
+</Layout>

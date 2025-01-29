@@ -1,0 +1,21 @@
+---
+import { Prisma } from "@/database";
+import CategoryBlock from "./CategoryBlock.astro";
+
+const categories = await Prisma.category.findMany({});
+const { slug } = Astro.params;
+---
+
+<div class="flex items-center gap-3 overflow-x-auto pb-3">
+  <CategoryBlock href="/order" active={!slug}>All Menus</CategoryBlock>
+  {
+    categories.map((category) => (
+      <CategoryBlock
+        href={`/order/${category.slug}`}
+        active={slug === category.slug}
+      >
+        {category.name}
+      </CategoryBlock>
+    ))
+  }
+</div>

@@ -1,0 +1,35 @@
+---
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import PrimaryButton from "@/components/PrimaryButton";
+import Layout from "@/layouts/Layout.astro";
+import DashboardProductWrapper from "@/components/wrapper/DashboardProductWrapper";
+---
+
+<Layout title="Dashboard Products">
+  <Breadcrumb />
+  <div>
+    <div
+      class="flex flex-col md:flex-row md:justify-between md:items-center mb-2 gap-2 md:gap-0"
+    >
+      <div class="flex items-center justify-between">
+        <h1 class="font-medium text-lg">Products List</h1>
+
+        <a href="/dashboard/product/create">
+          <PrimaryButton type="button" className="md:hidden">
+            Create Product
+          </PrimaryButton>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="/dashboard/product/create">
+          <PrimaryButton type="button" className="hidden md:block">
+            Create Product
+          </PrimaryButton>
+        </a>
+      </div>
+    </div>
+
+    <DashboardProductWrapper client:visible />
+  </div>
+</Layout>

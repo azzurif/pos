@@ -1,0 +1,66 @@
+---
+import { Prisma } from "@/database";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Layout from "@/layouts/Layout.astro";
+import DashboardOrderWrapper from "@/components/wrapper/DashboardOrderWrapper";
+import { RupiahFormat } from "@/utils/RupiahFormat";
+
+const totalIncome = await Prisma.order.aggregate({
+  _sum: {
+    total: true,
+  },
+});
+
+const mostPurchasedProduct = await Prisma.orderProduct.groupBy({
+  by: ["productId"],
+  _sum: {
+    quantity: true,
+  },
+  orderBy: {
+    _sum: {
+      quantity: "desc",
+    },
+  },
+  take: 1,
+});
+
+const productDetails = await Prisma.product.findUnique({
+  where: {
+    id: mostPurchasedProduct[0].productId,
+  },
+});
+---
+
+<Layout title="Dashboard">
+  <Breadcrumb />
+  <div class="space-y-2 mb-4">
+    <div class="font-medium text-lg">Summary</div>
+
+    <section class="flex items-center gap-4 overflow-x-auto">
+      <dl class="flex flex-col rounded-lg bg-white px-4 py-8 text-center w-72">
+        <dt class="order-last md:text-lg font-medium text-gray-500">
+          Total Income
+        </dt>
+
+        <dd class="text-xl font-extrabold md:text-3xl">
+          {RupiahFormat(totalIncome._sum.total || 0)}
+        </dd>
+      </dl>
+      <dl class="flex flex-col rounded-lg bg-white px-4 py-8 text-center w-72">
+        <dt class="order-last md:text-lg font-medium text-gray-500">
+          Best-selling with {mostPurchasedProduct[0]._sum.quantity || 0} sold
+        </dt>
+
+        <dd class="text-xl font-extrabold md:text-3xl">
+          {productDetails?.name}
+        </dd>
+      </dl>
+    </section>
+
+    <div class="space-y-2">
+      <h1 class="font-medium text-lg">Latest Order Booked</h1>
+
+      <DashboardOrderWrapper client:visible />
+    </div>
+  </div>
+</Layout>

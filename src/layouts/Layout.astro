@@ -1,0 +1,32 @@
+---
+import Navbar from "@/components/Navbar.astro";
+
+type Props = {
+  title: string;
+};
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{import.meta.env.PUBLIC_APP_NAME} | {title}</title>
+  </head>
+  <body class="font-sans antialiased bg-gray-100 min-h-screen">
+    <Navbar />
+    <main class="p-4">
+      <slot />
+    </main>
+
+    <script
+      is:inline
+      type="text/javascript"
+      src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY}></script>
+  </body>
+</html>

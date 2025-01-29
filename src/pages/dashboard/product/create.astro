@@ -1,0 +1,94 @@
+---
+import { actions } from "astro:actions";
+import type { Category } from "@prisma/client";
+import Label from "@/components/Label.astro";
+import Layout from "@/layouts/Layout.astro";
+import TextInput from "@/components/TextInput";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const {
+  data: { categories },
+} = await Astro.callAction(actions.category.getAll, {});
+---
+
+<Layout title="Create Product">
+  <Breadcrumb />
+  <h1 class="text-xl font-medium">Create Product</h1>
+
+  <form class="space-y-2 mt-4">
+    <div class="md:flex md:items-start md:gap-3">
+      <div class="space-y-1 w-full">
+        <Label for="category" value="Category" />
+        <select
+          name="category"
+          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
+          {
+            categories?.map((category) => (
+              <option value={category.id}> {category.name} </option>
+            ))
+          }
+        </select>
+        <div id="error-category" class="text-sm text-red-400 pt-1"></div>
+      </div>
+
+      <div class="space-y-1 w-full">
+        <Label for="name" value="Name" />
+        <TextInput placeholder="Name" name="name" className="w-full" />
+        <div id="error-name" class="text-sm text-red-400 pt-1"></div>
+      </div>
+    </div>
+
+    <div class="md:flex md:items-start md:gap-3">
+      <div class="space-y-1 w-full">
+        <Label for="image" value="image" />
+        <TextInput
+          placeholder="e.g https://google.com/image.png"
+          name="image"
+          className="w-full"
+        />
+        <div id="error-image" class="text-sm text-red-400 pt-1"></div>
+      </div>
+
+      <div class="space-y-1 w-full">
+        <Label for="price" value="Price" />
+        <TextInput
+          placeholder="1"
+          type="number"
+          min="1"
+          name="price"
+          className="w-full"
+        />
+        <div id="error-price" class="text-sm text-red-400 pt-1"></div>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <PrimaryButton>Save</PrimaryButton>
+    </div>
+  </form>
+</Layout>
+
+<script>
+  import { actions } from "astro:actions";
+  import { navigate } from "astro:transitions/client";
+
+  const categoryError = document.getElementById("error-category");
+  const nameError = document.getElementById("error-name");
+  const imageError = document.getElementById("error-image");
+  const priceError = document.getElementById("error-price");
+  const form = document.querySelector("form");
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const { error } = await actions.product.create(formData);
+    if (error) {
+      categoryError!.textContent = error.fields?.category?.join(",");
+      nameError!.textContent = error.fields?.name?.join(",");
+      imageError!.textContent = error.fields?.image?.join(",");
+      priceError!.textContent = error.fields?.price?.join(",");
+    }
+    if (!error) navigate("/dashboard/products");
+  });
+</script>

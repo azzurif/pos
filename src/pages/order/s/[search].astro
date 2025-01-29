@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CategoryList from "@/components/CategoryList.astro";
+import ProductsWrapper from "@/components/wrapper/ProductsWrapper";
+import Sidebar from "@/components/Sidebar.astro";
+
+const { pathname } = Astro.url;
+const { search } = Astro.params;
+---
+
+<Layout title={`search for ${search}`}>
+  <div class:list={[pathname.startsWith("/order") && "w-full md:w-3/4"]}>
+    <CategoryList />
+
+    <ProductsWrapper slug={undefined} like={search} client:load />
+    <Sidebar />
+  </div>
+</Layout>

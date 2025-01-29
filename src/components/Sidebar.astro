@@ -1,0 +1,64 @@
+---
+import OrderForm from "@/components/OrderForm";
+
+const table = JSON.parse(Astro.cookies.get("table")?.value || "{}");
+---
+
+<aside
+  id="sidebar-order"
+  class="shrink-0 bg-white md:w-1/4 py-4 px-6 space-y-3 h-full fixed right-0 top-0 flex flex-col transform-all delay-75 duration-150 ease-in-out md:translate-x-0"
+>
+  <button
+    id="button-sidebar-order"
+    type="button"
+    class="md:hidden absolute top-4 right-4 rounded-md bg-gray-400 text-white p-1"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width={1.5}
+      stroke="currentColor"
+      class="size-7 md:size-8"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18 18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+
+  <div class="border-b border-gray-200 text-center font-medium pb-2">
+    <h2>Order Placement</h2>
+
+    {
+      table.id && (
+        <section class="text-gray-500 select-none text-sm">
+          On table {table?.id}
+        </section>
+      )
+    }
+  </div>
+
+  <OrderForm client:only="react">
+    <div slot="fallback">Loading...</div>
+  </OrderForm>
+</aside>
+
+<script>
+  const sidebar = document.getElementById("sidebar-order");
+  const buttonSidebar = document.getElementById("button-sidebar-order");
+  let showSidebar = false;
+
+  buttonSidebar?.addEventListener("click", () => {
+    showSidebar = !showSidebar;
+
+    if (showSidebar) {
+      sidebar?.classList.add("translate-x-0");
+      sidebar?.classList.remove("translate-x-full");
+    } else {
+      sidebar?.classList.add("translate-x-full");
+      sidebar?.classList.remove("translate-x-0");
+    }
+  });
+</script>
